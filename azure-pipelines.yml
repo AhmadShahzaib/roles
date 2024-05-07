@@ -1,0 +1,10 @@
+trigger:
+- main
+- dev
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- publish: '$(System.DefaultWorkingDirectory)'
+  artifact: roles
