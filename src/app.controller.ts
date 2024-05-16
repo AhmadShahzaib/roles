@@ -84,6 +84,9 @@ export class RolesController extends BaseController {
         Logger.log(`roleName already exists`);
         throw new ConflictException(`Role Name already exists`);
       }
+      if(addRoleRequestData.permissions.length < 1){
+        throw new ConflictException(`Please add atleast one permission`);
+      }
       await this.roleService.validatePermissionIds(
         addRoleRequestData.permissions,
       );
