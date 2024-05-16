@@ -123,8 +123,12 @@ export class RolesController extends BaseController {
       }`,
     );
     try {
+      const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
+
       const options: FilterQuery<RoleDocument> = {};
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
+      options.$and = [];
+      options['$and'].push({ tenantId: id });
       if (search) {
         options.$or = [];
         if (Types.ObjectId.isValid(search)) {
