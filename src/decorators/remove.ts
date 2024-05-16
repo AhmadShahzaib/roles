@@ -10,7 +10,7 @@ import {
 export default function DeleteRoleDecorators() {
   const DeleteRoleDecorators: Array<CombineDecoratorType> = [
     Delete(':id'),
-    SetMetadata('permissions', [ROLES.DELETE]),
+    SetMetadata('permissions', [ROLES.DEACTIVATE]),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.CONFLICT, type: ErrorType }),
   ];
