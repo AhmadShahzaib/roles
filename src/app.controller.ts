@@ -220,9 +220,9 @@ export class RolesController extends BaseController {
 
     try {
       const option = {
-        roleName: {
-          $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
-        },
+        // roleName: {
+        //   $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
+        // },
         $and: [{ _id: { $ne: id }, isDeleted: false },{ tenantId: tenantId },],
       };
       const roleExist = await this.roleService.findOne(option);
