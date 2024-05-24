@@ -75,7 +75,7 @@ export class RolesController extends BaseController {
             roleName: {
               $regex: new RegExp(`^${addRoleRequestData.roleName}`, 'i'),
             },
-          },
+          },{ tenantId: tenantId },
           { isDeleted: false },
         ],
       };
@@ -216,12 +216,14 @@ export class RolesController extends BaseController {
         !response.locals.user ? 'Unauthorized User' : response.locals.user.id
       }`,
     );
+    const { tenantId } = request.user ?? ({ tenantId: undefined } as any);
+
     try {
       const option = {
         roleName: {
           $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
         },
-        $and: [{ _id: { $ne: id }, isDeleted: false }],
+        $and: [{ _id: { $ne: id }, isDeleted: false },{ tenantId: tenantId },],
       };
       const roleExist = await this.roleService.findOne(option);
       if (roleExist && Object.keys(roleExist).length > 0) {
@@ -232,6 +234,9 @@ export class RolesController extends BaseController {
       Logger.log(
         `Validating all permission IDs provided by calling permission service`,
       );
+      if(editRoleRequestData.permissions.length < 1){
+        throw new ConflictException(`Please add atleast one permission`);
+      }
       await this.roleService.validatePermissionIds(
         editRoleRequestData.permissions,
       );
