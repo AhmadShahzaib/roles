@@ -77,6 +77,7 @@ export class RolesController extends BaseController {
               $regex: new RegExp(`^${addRoleRequestData.roleName}`, 'i'),
             },
           },
+          { tenantId: tenantId },
           { isDeleted: false },
         ],
       };
@@ -84,6 +85,9 @@ export class RolesController extends BaseController {
       if (roleExist && Object.keys(roleExist).length > 0) {
         Logger.log(`roleName already exists`);
         throw new ConflictException(`Role Name already exists`);
+      }
+      if (addRoleRequestData.permissions.length < 1) {
+        throw new ConflictException(`Please add atleast one permission`);
       }
       await this.roleService.validatePermissionIds(
         addRoleRequestData.permissions,
@@ -124,9 +128,13 @@ export class RolesController extends BaseController {
       }`,
     );
     try {
+      const { tenantId: id, timeZone } =
+        request.user ?? ({ tenantId: undefined } as any);
+
       const options: FilterQuery<RoleDocument> = {};
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
-      const { timeZone } = request.user ?? ({ timeZone: '' } as any);
+      options.$and = [];
+      options['$and'].push({ tenantId: id });
       if (search) {
         options.$or = [];
         if (Types.ObjectId.isValid(search)) {
@@ -216,12 +224,14 @@ export class RolesController extends BaseController {
         !response.locals.user ? 'Unauthorized User' : response.locals.user.id
       }`,
     );
+    const { tenantId } = request.user ?? ({ tenantId: undefined } as any);
+
     try {
       const option = {
-        roleName: {
-          $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
-        },
-        $and: [{ _id: { $ne: id }, isDeleted: false }],
+        // roleName: {
+        //   $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
+        // },
+        $and: [{ _id: { $ne: id }, isDeleted: false }, { tenantId: tenantId }],
       };
       const roleExist = await this.roleService.findOne(option);
       if (roleExist && Object.keys(roleExist).length > 0) {
@@ -232,6 +242,9 @@ export class RolesController extends BaseController {
       Logger.log(
         `Validating all permission IDs provided by calling permission service`,
       );
+      if (editRoleRequestData.permissions.length < 1) {
+        throw new ConflictException(`Please add atleast one permission`);
+      }
       await this.roleService.validatePermissionIds(
         editRoleRequestData.permissions,
       );
