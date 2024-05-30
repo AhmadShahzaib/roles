@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 export default function GetSingleRoleDecorators() {
   const GetSingleRoleDecorators: Array<CombineDecoratorType> = [
     Get(':id'),
-    SetMetadata('permissions', [ROLES.LIST]),
+    SetMetadata('permissions', ["ab16bbc7"]),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.OK, type: RoleResponse }),
   ];
