@@ -32,6 +32,7 @@ import EditRoleDecorators from './decorators/update';
 import DeleteRoleDecorators from './decorators/remove';
 import GetSingleRoleDecorators from './decorators/getRoleById';
 import { getRoleById } from 'shared/roleById';
+import moment from 'moment-timezone';
 import {
   BaseController,
   ListingParams,
@@ -125,6 +126,7 @@ export class RolesController extends BaseController {
     try {
       const options: FilterQuery<RoleDocument> = {};
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
+      const { timeZone } = request.user ?? ({ timeZone: '' } as any);
       if (search) {
         options.$or = [];
         if (Types.ObjectId.isValid(search)) {
@@ -173,6 +175,11 @@ export class RolesController extends BaseController {
         const jsonRole = role.toJSON() as RoleResponse;
         jsonRole.id = role.id;
         jsonRole.permissions = permissions;
+        if (timeZone?.tzCode) {
+          jsonRole.createdAt = moment
+            .tz(jsonRole.createdAt, timeZone?.tzCode)
+            .format('DD/MM/YYYY h:mm a');
+        }
         const roleResponse = new RoleResponse(jsonRole);
         responseData.push(roleResponse);
       }
