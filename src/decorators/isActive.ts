@@ -12,7 +12,7 @@ import { RoleResponse } from 'models';
 export default function IsActiveDecorators() {
   const IsActiveDecorators: Array<CombineDecoratorType> = [
     Patch('/status/:id'),
-    SetMetadata('permissions', [ROLES.ACTIVATE]),
+    SetMetadata('permissions', [ROLES.DEACTIVATE]),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.OK, type: RoleResponse }),
     ApiParam({

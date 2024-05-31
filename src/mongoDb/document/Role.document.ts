@@ -5,7 +5,8 @@ export default interface RoleDocument extends Document {
   roleName: string;
   tenantId?: string;
   description: string;
-  permissions:[string] | string[];
+  permissions: [string] | string[];
   // permissions?: PermissionDocument['_id'];
   isActive: boolean;
+  createdAt: string;
 }
