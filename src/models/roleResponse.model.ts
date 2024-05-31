@@ -5,7 +5,6 @@ import { BaseResponseType } from '@shafiqrathore/logeld-tenantbackend-common-fut
 // import iPermission from 'permissions/interfaces/iPermissions';
 
 export class RoleResponse extends BaseResponseType {
-
   @ApiProperty()
   id: string;
 
@@ -24,6 +23,9 @@ export class RoleResponse extends BaseResponseType {
   @ApiProperty()
   isActive: boolean;
 
+  @ApiProperty()
+  createdAt: string;
+
   constructor(role: RoleDocument | RoleResponse) {
     super();
     this.id = role.id;
@@ -32,5 +34,6 @@ export class RoleResponse extends BaseResponseType {
     this.tenantId = role.tenantId;
     this.permissions = role.permissions;
     this.isActive = role.isActive;
+    this.createdAt = role.createdAt;
   }
 }

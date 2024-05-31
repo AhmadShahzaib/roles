@@ -32,6 +32,7 @@ import EditRoleDecorators from './decorators/update';
 import DeleteRoleDecorators from './decorators/remove';
 import GetSingleRoleDecorators from './decorators/getRoleById';
 import { getRoleById } from 'shared/roleById';
+import moment from 'moment-timezone';
 import {
   BaseController,
   ListingParams,
@@ -75,7 +76,8 @@ export class RolesController extends BaseController {
             roleName: {
               $regex: new RegExp(`^${addRoleRequestData.roleName}`, 'i'),
             },
-          },{ tenantId: tenantId },
+          },
+          { tenantId: tenantId },
           { isDeleted: false },
         ],
       };
@@ -84,7 +86,7 @@ export class RolesController extends BaseController {
         Logger.log(`roleName already exists`);
         throw new ConflictException(`Role Name already exists`);
       }
-      if(addRoleRequestData.permissions.length < 1){
+      if (addRoleRequestData.permissions.length < 1) {
         throw new ConflictException(`Please add atleast one permission`);
       }
       await this.roleService.validatePermissionIds(
@@ -126,7 +128,8 @@ export class RolesController extends BaseController {
       }`,
     );
     try {
-      const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
+      const { tenantId: id, timeZone } =
+        request.user ?? ({ tenantId: undefined } as any);
 
       const options: FilterQuery<RoleDocument> = {};
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
@@ -180,6 +183,11 @@ export class RolesController extends BaseController {
         const jsonRole = role.toJSON() as RoleResponse;
         jsonRole.id = role.id;
         jsonRole.permissions = permissions;
+        if (timeZone?.tzCode) {
+          jsonRole.createdAt = moment
+            .tz(jsonRole.createdAt, timeZone?.tzCode)
+            .format('DD/MM/YYYY h:mm a');
+        }
         const roleResponse = new RoleResponse(jsonRole);
         responseData.push(roleResponse);
       }
@@ -223,7 +231,7 @@ export class RolesController extends BaseController {
         // roleName: {
         //   $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
         // },
-        $and: [{ _id: { $ne: id }, isDeleted: false },{ tenantId: tenantId },],
+        $and: [{ _id: { $ne: id }, isDeleted: false }, { tenantId: tenantId }],
       };
       const roleExist = await this.roleService.findOne(option);
       if (roleExist && Object.keys(roleExist).length > 0) {
@@ -234,7 +242,7 @@ export class RolesController extends BaseController {
       Logger.log(
         `Validating all permission IDs provided by calling permission service`,
       );
-      if(editRoleRequestData.permissions.length < 1){
+      if (editRoleRequestData.permissions.length < 1) {
         throw new ConflictException(`Please add atleast one permission`);
       }
       await this.roleService.validatePermissionIds(
