@@ -89,6 +89,7 @@ export class RolesController extends BaseController {
       if (addRoleRequestData.permissions.length < 1) {
         throw new ConflictException(`Please add atleast one permission`);
       }
+      addRoleRequestData.permissions.push("66823df2fcda6c94e66a6090");
       await this.roleService.validatePermissionIds(
         addRoleRequestData.permissions,
       );
@@ -245,6 +246,8 @@ export class RolesController extends BaseController {
       if (editRoleRequestData.permissions.length < 1) {
         throw new ConflictException(`Please add atleast one permission`);
       }
+      editRoleRequestData.permissions.push("66823df2fcda6c94e66a6090");
+
       await this.roleService.validatePermissionIds(
         editRoleRequestData.permissions,
       );
