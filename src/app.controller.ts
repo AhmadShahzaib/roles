@@ -89,7 +89,7 @@ export class RolesController extends BaseController {
       if (addRoleRequestData.permissions.length < 1) {
         throw new ConflictException(`Please add atleast one permission`);
       }
-      addRoleRequestData.permissions.push("66823df2fcda6c94e66a6090");
+      addRoleRequestData.permissions.push('66823df2fcda6c94e66a6090');
       await this.roleService.validatePermissionIds(
         addRoleRequestData.permissions,
       );
@@ -228,17 +228,17 @@ export class RolesController extends BaseController {
     const { tenantId } = request.user ?? ({ tenantId: undefined } as any);
 
     try {
-      // const option = {
-      //   // roleName: {
-      //   //   $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
-      //   // },
-      //   // $and: [{ _id: { $ne: id }, isDeleted: false }, { tenantId: tenantId }],
-      // };
-      // const roleExist = await this.roleService.findOne(option);
-      // if (roleExist && Object.keys(roleExist).length > 0) {
-      //   Logger.log(`roleName already exist`);
-      //   throw new ConflictException(`Role Name already exist`);
-      // }
+      const option = {
+        roleName: {
+          $regex: new RegExp(`^${editRoleRequestData.roleName}`, 'i'),
+        },
+        $and: [{ _id: { $ne: id }, isDeleted: false }, { tenantId: tenantId }],
+      };
+      const roleExist = await this.roleService.findOne(option);
+      if (roleExist && Object.keys(roleExist).length > 0) {
+        Logger.log(`roleName already exist`);
+        throw new ConflictException(`Role Name already exist`);
+      }
 
       Logger.log(
         `Validating all permission IDs provided by calling permission service`,
@@ -246,7 +246,7 @@ export class RolesController extends BaseController {
       if (editRoleRequestData.permissions.length < 1) {
         throw new ConflictException(`Please add atleast one permission`);
       }
-      editRoleRequestData.permissions.push("66823df2fcda6c94e66a6090");
+      editRoleRequestData.permissions.push('66823df2fcda6c94e66a6090');
 
       await this.roleService.validatePermissionIds(
         editRoleRequestData.permissions,
