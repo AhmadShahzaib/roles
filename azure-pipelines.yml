@@ -2,6 +2,7 @@ trigger:
 - dev
 - qa
 - stage
+- prod
 
 pool:
   vmImage: ubuntu-latest
